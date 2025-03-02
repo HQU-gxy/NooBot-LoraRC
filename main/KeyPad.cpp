@@ -8,15 +8,15 @@ namespace KeyPad
 {
     static KeyPadPin lastKeyPin;
     static bool lastKeyState;
-    static PCF8574 keyPad(0x38);
+    static PCF8574 keyPad(0x20, PCF_SDA_PIN, PCF_SCL_PIN);
 
     constexpr auto ACTIVE_STATE = LOW;
-    
+
     static void checkPins(TimerHandle_t)
     {
         for (auto &key : KEY_PINS)
         {
-            bool state = (keyPad.digitalRead(key) == ACTIVE_STATE);
+            auto state = isPressed(key);
             if (state != lastKeyState)
             {
                 lastKeyState = state;
@@ -39,6 +39,11 @@ namespace KeyPad
     std::pair<KeyPadPin, bool> getLastKeyEvent()
     {
         return {lastKeyPin, lastKeyState};
+    }
+
+    bool isPressed(KeyPadPin key)
+    {
+        return keyPad.digitalRead(key) == ACTIVE_STATE;
     }
 
 } // namespace KeyPad

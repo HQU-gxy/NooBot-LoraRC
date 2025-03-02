@@ -20,4 +20,5 @@ namespace KeyPad
 
     bool begin();
     std::pair<KeyPadPin, bool> getLastKeyEvent();
+    bool isPressed(KeyPadPin key);
 } // namespace KeyPad
