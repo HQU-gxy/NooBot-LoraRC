@@ -29,10 +29,8 @@ namespace LoraLink
 
         if (!digitalRead(lockPin))
         {
-            if (++unlockCount >= MAX_UNLOCK_COUNT)
-            {
-                unlockCount = MAX_UNLOCK_COUNT;
-                if (!linkLost)
+            if (!linkLost)
+                if (++unlockCount >= MAX_UNLOCK_COUNT)
                 {
                     linkLost = true;
                     ESP_LOGW(TAG, "Link lost");
@@ -41,9 +39,8 @@ namespace LoraLink
                         onLinkLostCallback();
                     }
                 }
-            }
         }
-        else
+        else if (linkLost)
         {
             unlockCount = 0;
             linkLost = false;
@@ -63,7 +60,7 @@ namespace LoraLink
         LoraSerial->begin(38400);
         LoraSerial->setTimeout(20);
 
-        auto checkConnectionTimer = xTimerCreate("checkConnectionTimer", pdMS_TO_TICKS(CHECK_CONN_PERIOD), pdTRUE, nullptr, checkConnection);
+        static auto checkConnectionTimer = xTimerCreate("checkConnectionTimer", pdMS_TO_TICKS(CHECK_CONN_PERIOD), pdTRUE, nullptr, checkConnection);
         xTimerStart(checkConnectionTimer, 0);
     }
 

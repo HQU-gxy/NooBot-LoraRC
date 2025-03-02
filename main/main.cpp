@@ -41,22 +41,38 @@ extern "C" void app_main()
 
     LoraLink::begin(Serial1, LORA_TX_PIN, LORA_RX_PIN, LORA_LOCK_PIN);
 
+    constexpr auto CONTROLLER_PERIOD = 50;
     while (1)
     {
-        float linear = 0;
-        float angular = 0;
+        static float linear = 0;
+        static float angular = 0;
 
-        if (KeyPad::isPressed(KeyPad::KEY_UP))
-            linear = 0.2;
-        else if (KeyPad::isPressed(KeyPad::KEY_DOWN))
-            linear = -0.2;
+        // Naturally decelerate
+        if (linear > 0)
+            linear -= IDLE_ACC * CONTROLLER_PERIOD / 1000;
+        else if (linear < 0)
+            linear += IDLE_ACC * CONTROLLER_PERIOD / 1000;
+
+        // Forward and backward
+        if (KeyPad::isPressed(KeyPad::KEY_R))
+        {
+            if (linear < MAX_LIN_SPEED)
+                linear += THROTTLE_ACC * CONTROLLER_PERIOD / 1000;
+        }
+        else if (KeyPad::isPressed(KeyPad::KEY_L))
+        {
+            if (linear > -MAX_LIN_SPEED)
+                linear -= THROTTLE_ACC * CONTROLLER_PERIOD / 1000;
+        }
 
         if (KeyPad::isPressed(KeyPad::KEY_LEFT))
             angular = 1.0;
         else if (KeyPad::isPressed(KeyPad::KEY_RIGHT))
             angular = -1.0;
+        else
+            angular = 0;
 
         LoraLink::sendCommand(linear, angular);
-        vTaskDelay(50);
+        vTaskDelay(CONTROLLER_PERIOD);
     }
 }
