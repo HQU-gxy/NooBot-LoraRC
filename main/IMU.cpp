@@ -6,7 +6,7 @@
 
 namespace IMU
 {
-    SPIClass SPIIMU(HSPI);
+    SPIClass SPIIMU(SPI2);
     Bmi088Accel accel(SPIIMU, ACC_CS_PIN);
     Bmi088Gyro gyro(SPIIMU, GYRO_CS_PIN);
 
@@ -17,12 +17,14 @@ namespace IMU
     bool begin()
     {
         SPIIMU.begin(SPI2_SCK_PIN, SPI2_MISO_PIN, SPI2_MOSI_PIN);
-        if (accel.begin() < 0)
+        auto ret = accel.begin();
+        if (ret < 0)
         {
-            ESP_LOGE("IMU", "Failed to initialize accelerometer");
+            ESP_LOGE("IMU", "Failed to initialize accelerometer: %d", ret);
             return false;
         }
-        if (gyro.begin() < 0)
+        ret = gyro.begin();
+        if (ret < 0)
         {
             ESP_LOGE("IMU", "Failed to initialize gyroscope");
             return false;
