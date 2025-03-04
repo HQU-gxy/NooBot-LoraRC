@@ -1,32 +1,30 @@
 #pragma once
 
 // LED pins
-constexpr auto LED_PIN = 42;
 
 // GPIO expander pins
-constexpr auto PCF_SCL_PIN = 18;
-constexpr auto PCF_SDA_PIN = 17;
+constexpr auto PCF_SCL_PIN = 13;
+constexpr auto PCF_SDA_PIN = 14;
 
 // IMU pins
-constexpr auto ACC_CS_PIN = 11;
-constexpr auto GYRO_CS_PIN = 14;
-constexpr auto SPI2_SCK_PIN = 13;
-constexpr auto SPI2_MISO_PIN = 10;
-constexpr auto SPI2_MOSI_PIN = 12;
+constexpr auto ACC_CS_PIN = 5;
+constexpr auto GYRO_CS_PIN = 8;
+constexpr auto SPI2_SCK_PIN = 4;
+constexpr auto SPI2_MISO_PIN = 7;
+constexpr auto SPI2_MOSI_PIN = 3;
 
-// Screen pins are defined in the sdkconfig
-constexpr auto SCREEN_BL_PIN = 33;
+// Screen pins
+constexpr auto I2C1_SCL_PIN = 11;
+constexpr auto I2C1_SDA_PIN = 12;
 
 // LoraLink pins
-constexpr auto LORA_TX_PIN = 7;
-constexpr auto LORA_RX_PIN = 8;
-constexpr auto LORA_LOCK_PIN = 6;
+constexpr auto LORA_TX_PIN = 22;
+constexpr auto LORA_RX_PIN = 10;
+constexpr auto LORA_LOCK_PIN = 1;
 
 // Battery voltage sense pin
-constexpr auto VBAT_SENSE_PIN = 1;
+constexpr auto VBAT_SENSE_PIN = 0;
 
-
-// Maximum speeds
 constexpr auto MAX_LINEAR = 3.0f;
 constexpr auto MAX_ANGULAR = 1.0f;
 

@@ -92,3 +92,6 @@ public:
         patternIndex = 0;
     }
 };
+
+bool LED::initialized = false;
+std::vector<LED *> LED::leds;
