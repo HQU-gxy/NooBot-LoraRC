@@ -7,3 +7,6 @@
 [submodule "components/bmi088/bmi088-arduino"]
 	path = components/bmi088/bmi088-arduino
 	url = https://github.com/redstonee/bmi088-arduino-esp32
+[submodule "components/TFT_eSPI"]
+	path = components/TFT_eSPI
+	url = https://github.com/Bodmer/TFT_eSPI

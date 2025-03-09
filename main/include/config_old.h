@@ -9,9 +9,9 @@ constexpr auto PCF_SDA_PIN = 14;
 // IMU pins
 constexpr auto ACC_CS_PIN = 5;
 constexpr auto GYRO_CS_PIN = 8;
-constexpr auto SPI2_SCK_PIN = 4;
-constexpr auto SPI2_MISO_PIN = 7;
-constexpr auto SPI2_MOSI_PIN = 3;
+constexpr auto IMU_SCK_PIN = 4;
+constexpr auto IMU_MISO_PIN = 7;
+constexpr auto IMU_MOSI_PIN = 3;
 
 // Screen pins
 constexpr auto I2C1_SCL_PIN = 11;

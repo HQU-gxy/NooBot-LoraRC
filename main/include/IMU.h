@@ -17,11 +17,6 @@ namespace IMU
     bool begin();
 
     /**
-     * @brief Read and store the IMU data once
-     */
-    void readOnce();
-
-    /**
      * @brief Get the (a little bit) filtered IMU data
      *
      * @return IMUData The IMU data you want

@@ -3,7 +3,7 @@
 namespace LoraLink
 {
     constexpr auto CHECK_CONN_PERIOD = 50; // ms
-    constexpr auto MAX_UNLOCK_COUNT = 10;
+    constexpr auto MAX_UNLOCK_COUNT = 5;
 
     constexpr auto TAG = "LoraLink";
 
@@ -17,7 +17,7 @@ namespace LoraLink
 
     struct __attribute__((packed)) LoraLinkCommand
     {
-        const uint8_t header = 0x12;
+        const uint8_t header = 0x7b;
         float targetLinear;  // Linear speed in m/s
         float targetAngular; // Angular speed in rad/s
         uint8_t checksum;
@@ -59,6 +59,7 @@ namespace LoraLink
         LoraSerial->setPins(pinRx, pinTx);
         LoraSerial->begin(38400);
         LoraSerial->setTimeout(20);
+        pinMode(lockPin, INPUT_PULLDOWN);
 
         static auto checkConnectionTimer = xTimerCreate("checkConnectionTimer", pdMS_TO_TICKS(CHECK_CONN_PERIOD), pdTRUE, nullptr, checkConnection);
         xTimerStart(checkConnectionTimer, 0);

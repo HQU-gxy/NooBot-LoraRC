@@ -6,17 +6,36 @@
 
 namespace IMU
 {
-    SPIClass SPIIMU(SPI2);
-    Bmi088Accel accel(SPIIMU, ACC_CS_PIN);
-    Bmi088Gyro gyro(SPIIMU, GYRO_CS_PIN);
+    static SPIClass SPIIMU(HSPI);
+    static Bmi088Accel accel(SPIIMU, ACC_CS_PIN);
+    static Bmi088Gyro gyro(SPIIMU, GYRO_CS_PIN);
 
     constexpr uint8_t AVR_SAMPLES_COUNT = 10;
+    static IMUData dataBuffer[AVR_SAMPLES_COUNT];
 
-    IMUData dataBuffer[AVR_SAMPLES_COUNT];
+    /**
+     * @brief Read and store the IMU data once
+     */
+    static void readOnce(TimerHandle_t)
+    {
+        if (!accel.getDrdyStatus())
+        {
+            return;
+        }
+        accel.readSensor();
+        gyro.readSensor();
+        for (uint8_t i = 0; i < AVR_SAMPLES_COUNT - 1; i++)
+        {
+            dataBuffer[i] = dataBuffer[i + 1];
+        }
+        dataBuffer[AVR_SAMPLES_COUNT - 1] = IMUData{
+            accel.getAccelX_mss(), accel.getAccelY_mss(), accel.getAccelZ_mss(),
+            gyro.getGyroX_rads(), gyro.getGyroY_rads(), gyro.getGyroZ_rads()};
+    }
 
     bool begin()
     {
-        SPIIMU.begin(SPI2_SCK_PIN, SPI2_MISO_PIN, SPI2_MOSI_PIN);
+        SPIIMU.begin(IMU_SCK_PIN, IMU_MISO_PIN, IMU_MOSI_PIN);
         auto ret = accel.begin();
         if (ret < 0)
         {
@@ -34,24 +53,10 @@ namespace IMU
         accel.setRange(Bmi088Accel::RANGE_6G);
         gyro.setOdr(Bmi088Gyro::ODR_100HZ_BW_32HZ);
         gyro.setRange(Bmi088Gyro::RANGE_1000DPS);
-        return true;
-    }
 
-    void readOnce()
-    {
-        if (!accel.getDrdyStatus())
-        {
-            return;
-        }
-        accel.readSensor();
-        gyro.readSensor();
-        for (uint8_t i = 0; i < AVR_SAMPLES_COUNT - 1; i++)
-        {
-            dataBuffer[i] = dataBuffer[i + 1];
-        }
-        dataBuffer[AVR_SAMPLES_COUNT - 1] = IMUData{
-            accel.getAccelX_mss(), accel.getAccelY_mss(), accel.getAccelZ_mss(),
-            gyro.getGyroX_rads(), gyro.getGyroY_rads(), gyro.getGyroZ_rads()};
+        static auto readTimer = xTimerCreate("IMURead", 10, pdTRUE, nullptr, readOnce);
+        xTimerStart(readTimer, 0);
+        return true;
     }
 
     IMUData getData()
@@ -75,4 +80,8 @@ namespace IMU
         return data;
     }
 
+    float getAngle()
+    {
+        return 0;
+    }
 } // namespace IMU
