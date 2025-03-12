@@ -41,10 +41,9 @@ extern "C" void app_main()
     // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
 
     Display::begin();
-    Display::test();
 
     LED led(LED_PIN);
-    led.setBlinkPattern(LINK_LOST_PATTERN);
+    led.setBlinkPattern(GOOD_PATTERN);
     if (!IMU::begin())
     {
         ESP_LOGE(TAG, "IMU initialization failed");
@@ -59,6 +58,12 @@ extern "C" void app_main()
         vTaskDelay(portMAX_DELAY);
     }
 
+    auto onBotStatus = [](const LoraLink::BotStatusMsg *msg)
+    {
+        Display::updateSpeed(msg->currentLinear);
+        // Display::updateVoltage(msg->voltage);
+    };
+
     bool connected = true;
     LoraLink::setOnConnectedCallback([&led, &connected]()
                                      {connected = true;
@@ -68,6 +73,7 @@ extern "C" void app_main()
                                     {connected = false;
                                          led.setBlinkPattern(LINK_LOST_PATTERN); });
 
+    LoraLink::setOnStatusCallback(onBotStatus);
     LoraLink::begin(Serial1, LORA_TX_PIN, LORA_RX_PIN, LORA_LOCK_PIN);
 
     constexpr auto CONTROLLER_PERIOD = 50;
@@ -132,7 +138,16 @@ extern "C" void app_main()
         }
         else
         {
-            angularMsg = -std::atan(data.accel[0] / data.accel[1]) * ANGLE_SENSITIVITY;
+            auto angle = -std::atan(data.accel[0] / data.accel[1]);
+            if (data.accel[1] < 0)
+            {
+                if (data.accel[0] > 0)
+                    angle -= M_PI;
+                else
+                    angle += M_PI;
+            }
+
+            angularMsg = angle * ANGLE_SENSITIVITY;
             if (angularMsg > MAX_ANG_SPEED)
                 angularMsg = MAX_ANG_SPEED;
             else if (angularMsg < -MAX_ANG_SPEED)

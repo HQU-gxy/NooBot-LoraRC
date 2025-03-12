@@ -8,4 +8,6 @@ namespace Display
 
     void test();
 
+    void updateSpeed(float speed);
+    void updateVoltage(float voltage);
 } // namespace Display

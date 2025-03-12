@@ -10,3 +10,6 @@
 [submodule "components/TFT_eSPI"]
 	path = components/TFT_eSPI
 	url = https://github.com/Bodmer/TFT_eSPI
+[submodule "components/lvgl"]
+	path = components/lvgl
+	url = https://github.com/lvgl/lvgl.git
