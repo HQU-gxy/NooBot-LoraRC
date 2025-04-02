@@ -9,5 +9,8 @@ namespace Display
     void test();
 
     void updateSpeed(float speed);
-    void updateVoltage(float voltage);
+
+    void updateBotBatteryLevel(uint8_t level);
+    
+    void updateRCBatteryLevel(uint8_t level);
 } // namespace Display

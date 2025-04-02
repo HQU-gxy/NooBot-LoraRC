@@ -13,6 +13,7 @@
 #include "KeyPad.h"
 #include "LED.hpp"
 #include "Display.h"
+#include "BattMon.h"
 
 static const LED::BlinkPattern GOOD_PATTERN = {
     .oneshot = true,
@@ -31,17 +32,9 @@ extern "C" void app_main()
     constexpr auto TAG = "app_main";
     initArduino();
 
-    // Configure dynamic frequency scaling
-    // automatic light sleep is enabled
-    // esp_pm_config_t pm_config = {
-    //     .max_freq_mhz = 48,
-    //     .min_freq_mhz = 8,
-    //     .light_sleep_enable = true,
-    // };
-    // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
-
     Display::begin();
 
+    BattMon::init();
     LED led(LED_PIN);
     led.setBlinkPattern(GOOD_PATTERN);
     if (!IMU::begin())
@@ -61,7 +54,7 @@ extern "C" void app_main()
     auto onBotStatus = [](const LoraLink::BotStatusMsg *msg)
     {
         Display::updateSpeed(msg->currentLinear);
-        // Display::updateVoltage(msg->voltage);
+        // Display::updateBotBatteryLevel(msg->voltage);
     };
 
     bool connected = true;
@@ -131,7 +124,7 @@ extern "C" void app_main()
             angularMsg = 0;
 #else
         auto data = IMU::getData();
-        ESP_LOGI(TAG, "Accel: %f, %f, %f", data.accel[0], data.accel[1], data.accel[2]);
+        // ESP_LOGI(TAG, "Accel: %f, %f, %f", data.accel[0], data.accel[1], data.accel[2]);
         if (data.accel[2] < -8 || data.accel[2] > 1)
         { // It's put horizontally or upside down
             angularMsg = 0;
@@ -157,5 +150,14 @@ extern "C" void app_main()
         if (connected)
             LoraLink::sendCommand(linearMsg, angularMsg);
         vTaskDelay(CONTROLLER_PERIOD);
+
+        // Update the battery display every CONTROLLER_PERIOD *20ms
+        static uint8_t cnt = 0;
+        if (cnt++ == 20)
+        {
+            cnt = 0;
+            auto rcBatteryLevel = BattMon::getBatteryLevel();
+            Display::updateRCBatteryLevel(rcBatteryLevel);
+        }
     }
 }

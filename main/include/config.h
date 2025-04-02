@@ -24,6 +24,8 @@ constexpr auto LORA_LOCK_PIN = 6;
 
 // Battery voltage sense pin
 constexpr auto VBAT_SENSE_PIN = 1;
+constexpr auto VBAT_MULTIPLIER = 5.13f; // Voltage divider multiplier
+constexpr auto ADC_RES = 12;           // ADC resolution in bits
 
 #define ANG_MODE 1 // 0: Button, 1: Gravity
 #define LIN_MODE 0 // 0: Const Accel, 1: Const Vel
