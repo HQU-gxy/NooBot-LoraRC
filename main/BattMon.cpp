@@ -4,6 +4,9 @@
 
 namespace BattMon
 {
+    constexpr auto BAT_MAX_VOLTAGE = 4.2f; // Maximum voltage of the battery
+    constexpr auto BAT_MIN_VOLTAGE = 3.3f; // Minimum voltage of the battery
+
     constexpr auto N_SAMPLES = 10; // Number of samples to average
     static uint16_t readBuf[N_SAMPLES]{0};
     static uint8_t readIndex = 0;
@@ -37,6 +40,11 @@ namespace BattMon
         sum /= N_SAMPLES; // Average the samples
         auto voltage = sum * VBAT_MULTIPLIER / (1 << ADC_RES);
 
-        return static_cast<uint8_t>(round(voltage * 100 / 4.2f)); // 4.2V is the maximum voltage of the battery
+        // Map the voltage to a percentage
+        if (voltage <= BAT_MIN_VOLTAGE)
+            return 0;
+        if (voltage >= BAT_MAX_VOLTAGE)
+            return 100;
+        return static_cast<uint8_t>((voltage - BAT_MIN_VOLTAGE) * 100 / (BAT_MAX_VOLTAGE - BAT_MIN_VOLTAGE));
     }
 } // namespace BattMon

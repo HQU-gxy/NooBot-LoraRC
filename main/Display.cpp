@@ -44,8 +44,13 @@ namespace Display
     {
         if (speedUpdated)
         {
-            auto buf = String(speedVal, 2) + " m/s";
-            lv_label_set_text(speedValLabel, buf.c_str());
+            if (speedVal == MAXFLOAT) // The speed is not available
+                lv_label_set_text(speedValLabel, "-- m/s");
+            else
+            {
+                auto buf = String(speedVal, 2) + " m/s";
+                lv_label_set_text(speedValLabel, buf.c_str());
+            }
             speedUpdated = false;
         }
         if (rcBatteryUpdated)
@@ -100,7 +105,7 @@ namespace Display
         lv_obj_align(speedHintLabel, LV_ALIGN_TOP_LEFT, 10, 30);
 
         speedValLabel = lv_label_create(lv_screen_active());
-        lv_label_set_text(speedValLabel, "0.0 m/s");
+        lv_label_set_text(speedValLabel, "-- m/s");
         lv_obj_align(speedValLabel, LV_ALIGN_TOP_RIGHT, -10, 30);
 
         xTaskCreate(lvglTask, "lvglTask", 4096, NULL, 10, NULL);

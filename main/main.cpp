@@ -60,23 +60,31 @@ extern "C" void app_main()
     bool connected = true;
     LoraLink::setOnConnectedCallback([&led, &connected]()
                                      {connected = true;
-                                         led.setBlinkPattern(GOOD_PATTERN); });
+                                    led.setBlinkPattern(GOOD_PATTERN); });
 
     LoraLink::setOnLinkLostCallback([&led, &connected]()
                                     {connected = false;
-                                         led.setBlinkPattern(LINK_LOST_PATTERN); });
+                                    Display::updateSpeed(MAXFLOAT);
+                                    led.setBlinkPattern(LINK_LOST_PATTERN); });
 
     LoraLink::setOnStatusCallback(onBotStatus);
     LoraLink::begin(Serial1, LORA_TX_PIN, LORA_RX_PIN, LORA_LOCK_PIN);
 
     constexpr auto CONTROLLER_PERIOD = 50;
+    constexpr auto IDLE_TIME = 2000; // Stop sending commands after 2 second of inactivity
     while (1)
     {
         static float linearMsg = 0;
         static float angularMsg = 0;
 
+        static auto lastActiveTime = millis();
+
         auto rPressed = KeyPad::isPressed(KeyPad::KEY_R);
         auto lPressed = KeyPad::isPressed(KeyPad::KEY_L);
+
+        if (lPressed || rPressed)
+            lastActiveTime = millis();
+
 #if (LIN_MODE == 0)
         // Naturally decelerate
         if (linearMsg > 0)
@@ -147,7 +155,10 @@ extern "C" void app_main()
                 angularMsg = -MAX_ANG_SPEED;
         }
 #endif
-        if (connected)
+        if (angularMsg != 0)
+            lastActiveTime = millis();
+
+        if (connected && (lastActiveTime + IDLE_TIME) > millis())
             LoraLink::sendCommand(linearMsg, angularMsg);
         vTaskDelay(CONTROLLER_PERIOD);
 
