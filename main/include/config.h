@@ -25,7 +25,7 @@ constexpr auto LORA_LOCK_PIN = 6;
 // Battery voltage sense pin
 constexpr auto VBAT_SENSE_PIN = 1;
 constexpr auto VBAT_MULTIPLIER = 5.13f; // Voltage divider multiplier
-constexpr auto ADC_RES = 12;           // ADC resolution in bits
+constexpr auto ADC_RES = 12;            // ADC resolution in bits
 
 #define ANG_MODE 1 // 0: Button, 1: Gravity
 #define LIN_MODE 0 // 0: Const Accel, 1: Const Vel
@@ -34,10 +34,13 @@ constexpr auto ADC_RES = 12;           // ADC resolution in bits
 #if (LIN_MODE == 0)
 constexpr auto IDLE_ACC = 0.1f;     // Deceleration, m/s^2
 constexpr auto THROTTLE_ACC = 0.3f; // Acceleration, m/s^2
+#else
+constexpr auto DESIRED_LIN_SPEED = 0.5f; // Desired speed, m/s
 #endif
-constexpr auto MAX_LIN_SPEED = 3.0f; // Maximum speed, m/s
+constexpr auto MAX_LIN_SPEED = 2.0f; // Maximum speed, m/s
 
 #if (ANG_MODE == 1)
 constexpr auto ANGLE_SENSITIVITY = 1.0f; // Sensitivity of the gravity-controlled mode
+constexpr auto ANGLE_DEADZONE = 0.25f;   // Deadzone of the gravity-controlled mode
 #endif
 constexpr auto MAX_ANG_SPEED = 2.0f; // Maximum angular speed, rad/s

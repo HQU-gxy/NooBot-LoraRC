@@ -115,9 +115,9 @@ extern "C" void app_main()
 #else
         // Forward/backward control
         if (lPressed)
-            linearMsg = MAX_LIN_SPEED;
+            linearMsg = DESIRED_LIN_SPEED;
         else if (rPressed)
-            linearMsg = -MAX_LIN_SPEED;
+            linearMsg = -DESIRED_LIN_SPEED;
         else
             linearMsg = 0;
 #endif
@@ -140,6 +140,9 @@ extern "C" void app_main()
         else
         {
             auto angle = -std::atan(data.accel[0] / data.accel[1]);
+            if(abs(angle) < ANGLE_DEADZONE)
+                angle = 0;
+                
             if (data.accel[1] < 0)
             {
                 if (data.accel[0] > 0)
