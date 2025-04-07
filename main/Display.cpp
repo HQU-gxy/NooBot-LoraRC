@@ -14,6 +14,8 @@ namespace Display
     constexpr auto BL_PWM_RES = 8;
 
     static lv_obj_t *speedValLabel;
+    static lv_obj_t *botBatteryBar;
+    static lv_obj_t *botBatteryLabel;
     static lv_obj_t *rcBatteryBar;
     static lv_obj_t *rcBatteryLabel;
 
@@ -60,6 +62,18 @@ namespace Display
             lv_label_set_text(rcBatteryLabel, buf.c_str());
             rcBatteryUpdated = false;
         }
+        if (botBatteryUpdated)
+        {
+            lv_bar_set_value(botBatteryBar, botBatteryLevel, LV_ANIM_ON);
+            if (botBatteryLevel == 0xff)
+                lv_label_set_text(botBatteryLabel, "--");
+
+            else
+            {
+                auto buf = String(botBatteryLevel) + "%";
+                lv_label_set_text(botBatteryLabel, buf.c_str());
+            }
+        }
     }
 
     static void lvglTask(void *)
@@ -89,7 +103,7 @@ namespace Display
         lv_display_set_buffers(disp, draw_buf, NULL, sizeof(draw_buf), LV_DISPLAY_RENDER_MODE_PARTIAL);
 
         static auto rcBattryHintLabel = lv_label_create(lv_screen_active());
-        lv_label_set_text(rcBattryHintLabel, "RC: ");
+        lv_label_set_text(rcBattryHintLabel, "RC:");
         lv_obj_align(rcBattryHintLabel, LV_ALIGN_TOP_LEFT, 10, 5);
 
         rcBatteryBar = lv_bar_create(lv_screen_active());
@@ -102,11 +116,23 @@ namespace Display
 
         static auto speedHintLabel = lv_label_create(lv_screen_active());
         lv_label_set_text(speedHintLabel, "Speed: ");
-        lv_obj_align(speedHintLabel, LV_ALIGN_TOP_LEFT, 10, 30);
+        lv_obj_align(speedHintLabel, LV_ALIGN_TOP_LEFT, 10, 40);
 
         speedValLabel = lv_label_create(lv_screen_active());
         lv_label_set_text(speedValLabel, "-- m/s");
-        lv_obj_align(speedValLabel, LV_ALIGN_TOP_RIGHT, -10, 30);
+        lv_obj_align(speedValLabel, LV_ALIGN_TOP_RIGHT, -10, 40);
+
+        static auto botBatteryintLabel = lv_label_create(lv_screen_active());
+        lv_label_set_text(botBatteryintLabel, "Bot:");
+        lv_obj_align(botBatteryintLabel, LV_ALIGN_TOP_LEFT, 10, 70);
+
+        botBatteryBar = lv_bar_create(lv_screen_active());
+        lv_obj_set_size(botBatteryBar, 180, 15);
+        lv_obj_align(botBatteryBar, LV_ALIGN_TOP_MID, 0, 75);
+
+        botBatteryLabel = lv_label_create(lv_screen_active());
+        lv_obj_align(botBatteryLabel, LV_ALIGN_TOP_RIGHT, -10, 70);
+        lv_label_set_text(botBatteryLabel, "--");
 
         xTaskCreate(lvglTask, "lvglTask", 4096, NULL, 10, NULL);
     }

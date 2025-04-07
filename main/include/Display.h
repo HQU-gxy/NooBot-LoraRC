@@ -41,7 +41,7 @@ namespace Display
     /**
      * @brief Update the bot battery level of the RC on the display
      *
-     * @param level Battery level in percentage (0-100).
+     * @param level Battery level in percentage (0-100), or 0xFF if not available.
      */
     void updateBotBatteryLevel(uint8_t level);
 } // namespace Display

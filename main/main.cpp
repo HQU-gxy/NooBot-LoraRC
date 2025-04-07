@@ -53,8 +53,15 @@ extern "C" void app_main()
 
     auto onBotStatus = [](const LoraLink::BotStatusMsg *msg)
     {
+        static uint8_t cnt = 0;
         Display::updateSpeed(msg->currentLinear);
-        // Display::updateBotBatteryLevel(msg->voltage);
+
+        // Needless to update too frequently
+        if (cnt++ == 5)
+        {
+            Display::updateBotBatteryLevel(msg->batteryPercentage);
+            cnt = 0;
+        }
     };
 
     bool connected = true;
@@ -65,6 +72,7 @@ extern "C" void app_main()
     LoraLink::setOnLinkLostCallback([&led, &connected]()
                                     {connected = false;
                                     Display::updateSpeed(MAXFLOAT);
+                                    Display::updateBotBatteryLevel(0xff);
                                     led.setBlinkPattern(LINK_LOST_PATTERN); });
 
     LoraLink::setOnStatusCallback(onBotStatus);
@@ -134,7 +142,7 @@ extern "C" void app_main()
         auto [roll, pitch, yaw] = IMU::getEuler();
         // ESP_LOGI(TAG, "IMU: %f, %f, %f", roll, pitch, yaw);
 
-        if(abs(roll) < ANGLE_DEADZONE)
+        if (abs(roll) < ANGLE_DEADZONE)
             roll = 0;
         else if (roll > 0)
             roll -= ANGLE_DEADZONE;

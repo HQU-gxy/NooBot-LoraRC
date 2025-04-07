@@ -12,7 +12,7 @@ namespace LoraLink
         uint8_t header;          // Should be 0x69;
         float currentLinear;     // Linear speed in m/s
         float currentAngular;    // Angular speed in rad/s
-        uint8_t powerPercentage; // Battery percentage
+        uint8_t batteryPercentage; // Battery percentage
         // Accel in m/s^2
         float imu[6]; // Unused IMU data
         uint8_t checksum;

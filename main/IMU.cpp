@@ -19,6 +19,8 @@ namespace IMU
 
     /**
      * @brief Read and store the IMU data once
+     *
+     * @note This function is called by the timer
      */
     static void readOnce(TimerHandle_t)
     {
