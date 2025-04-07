@@ -4,23 +4,31 @@
 #include "KeyPad.h"
 #include "config.h"
 
+#include <unordered_map>
+
 namespace KeyPad
 {
     static KeyPadPin lastKeyPin;
     static bool lastKeyState;
+    static std::unordered_map<KeyPadPin, bool> keyStateMap;
     static PCF8574 keyPad(0x20, PCF_SDA_PIN, PCF_SCL_PIN);
 
     constexpr auto ACTIVE_STATE = LOW;
 
+    /**
+     * @brief Check the state of the keys and update the last key state and pin
+     * 
+     */
     static void checkPins(TimerHandle_t)
     {
         for (auto &key : KEY_PINS)
         {
             auto state = isPressed(key);
-            if (state != lastKeyState)
+            if (keyStateMap[key] != state)
             {
-                lastKeyState = state;
+                keyStateMap[key] = state;
                 lastKeyPin = key;
+                lastKeyState = state;
             }
         }
     }
@@ -31,9 +39,12 @@ namespace KeyPad
         {
             keyPad.pinMode(key, INPUT_PULLUP);
         }
-        return keyPad.begin();
+        if (!keyPad.begin())
+            return false;
+
         auto keyPadTimer = xTimerCreate("KeyPadTimer", pdMS_TO_TICKS(50), pdTRUE, nullptr, checkPins);
         xTimerStart(keyPadTimer, 0);
+        return true;
     }
 
     std::pair<KeyPadPin, bool> getLastKeyEvent()
