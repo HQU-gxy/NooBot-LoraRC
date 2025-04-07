@@ -17,6 +17,13 @@ namespace LoraLink
     callback_function_t onConnectedCallback;
     onStatusCallback_t onStatusCallback;
 
+    /**
+     * @brief Calculate the checksum of the data by XORing all the bytes
+     * 
+     * @param data The pointer to the data
+     * @param len The length of the data
+     * @return uint8_t The checksum byte 
+     */
     static uint8_t calcSum(const uint8_t *data, size_t len)
     {
         uint8_t sum = 0;
@@ -27,6 +34,11 @@ namespace LoraLink
         return sum;
     }
 
+    /**
+     * @brief Check the connection status by reading the lock pin and calling the appropriate callback
+     * 
+     * @note This function is called by a timer
+     */
     static void checkConnection(TimerHandle_t)
     {
         static uint8_t unlockCount = 0;
@@ -56,6 +68,11 @@ namespace LoraLink
         }
     }
 
+    /**
+     * @brief Check for status messages from the bot and call the callback if a message is received
+     * 
+     * @note This function is called by a timer
+     */
     static void checkForStatusMsg(TimerHandle_t)
     {
         if (linkLost)
@@ -89,6 +106,16 @@ namespace LoraLink
             loraSerial->read();
     }
 
+    /**
+     * @brief Initialize the LoraLink module
+     * 
+     * @param ser The serial port to use
+     * @param pinTx The TX pin
+     * @param pinRx The RX pin
+     * @param pinLock The lock pin
+     * 
+     * @note This function should be called before using the LoraLink module
+     */
     void begin(HardwareSerial &ser, uint16_t pinTx, uint16_t pinRx, uint16_t pinLock)
     {
         lockPin = pinLock;
@@ -105,6 +132,12 @@ namespace LoraLink
         xTimerStart(checkForStatusMsgTimer, 0);
     }
 
+    /**
+     * @brief Send a command to the bot
+     * 
+     * @param linear Target linear speed in m/s
+     * @param angular Target angular speed in rad/s
+     */
     void sendCommand(float linear, float angular)
     {
         struct __attribute__((packed)) LoraLinkCommand
@@ -124,21 +157,41 @@ namespace LoraLink
         loraSerial->write(cmdPtr, sizeof(cmd));
     }
 
+    /**
+     * @brief Check if the link is lost
+     * 
+     * @return true if the link is lost
+     */
     bool isLinkLost()
     {
         return linkLost;
     }
 
+    /**
+     * @brief Set the callback function to be called when the link is lost
+     * 
+     * @param callback The callback function
+     */
     void setOnLinkLostCallback(callback_function_t callback)
     {
         onLinkLostCallback = callback;
     }
 
+    /**
+     * @brief Set the callback function to be called when the link is established
+     * 
+     * @param callback The callback function
+     */
     void setOnConnectedCallback(callback_function_t callback)
     {
         onConnectedCallback = callback;
     }
 
+    /**
+     * @brief Set the callback function to be called when a status message is received
+     * 
+     * @param callback The callback function
+     */
     void setOnStatusCallback(onStatusCallback_t callback)
     {
         onStatusCallback = callback;

@@ -158,7 +158,7 @@ extern "C" void app_main()
                 angularMsg = -MAX_ANG_SPEED;
         }
 #endif
-        if (angularMsg != 0)
+        if (angularMsg != 0 || linearMsg != 0)
             lastActiveTime = millis();
 
         if (connected && (lastActiveTime + IDLE_TIME) > millis())

@@ -11,15 +11,7 @@ namespace IMU
         float gyro[3]{0};
     };
 
-    /**
-     * @brief Initialize the IMU
-     */
     bool begin();
 
-    /**
-     * @brief Get the (a little bit) filtered IMU data
-     *
-     * @return IMUData The IMU data you want
-     */
     IMUData getData();
 } // namespace IMU

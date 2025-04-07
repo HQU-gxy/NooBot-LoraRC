@@ -33,6 +33,11 @@ namespace IMU
             gyro.getGyroX_rads(), gyro.getGyroY_rads(), gyro.getGyroZ_rads()};
     }
 
+    /**
+     * @brief Initialize the IMU and start the timer to read the data
+     *
+     * @return true if the initialization was successful
+     */
     bool begin()
     {
         SPIIMU.begin(IMU_SCK_PIN, IMU_MISO_PIN, IMU_MOSI_PIN);
@@ -59,6 +64,11 @@ namespace IMU
         return true;
     }
 
+    /**
+     * @brief Get the IMU data from the buffer
+     *
+     * @return IMUData the IMU data
+     */
     IMUData getData()
     {
         IMUData data;
@@ -80,8 +90,4 @@ namespace IMU
         return data;
     }
 
-    float getAngle()
-    {
-        return 0;
-    }
 } // namespace IMU
