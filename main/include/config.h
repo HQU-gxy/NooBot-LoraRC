@@ -40,7 +40,7 @@ constexpr auto DESIRED_LIN_SPEED = 0.5f; // Desired speed, m/s
 constexpr auto MAX_LIN_SPEED = 2.0f; // Maximum speed, m/s
 
 #if (ANG_MODE == 1)
-constexpr auto ANGLE_SENSITIVITY = 1.0f; // Sensitivity of the gravity-controlled mode
-constexpr auto ANGLE_DEADZONE = 0.25f;   // Deadzone of the gravity-controlled mode
+constexpr auto ANGLE_SENSITIVITY = 0.05f; // Sensitivity of the gravity-controlled mode (deg to rad)
+constexpr auto ANGLE_DEADZONE = 10;    // Deadzone of the gravity-controlled mode (in degrees)
 #endif
 constexpr auto MAX_ANG_SPEED = 2.0f; // Maximum angular speed, rad/s

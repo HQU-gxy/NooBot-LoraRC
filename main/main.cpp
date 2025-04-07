@@ -131,32 +131,21 @@ extern "C" void app_main()
         else
             angularMsg = 0;
 #else
-        auto data = IMU::getData();
-        // ESP_LOGI(TAG, "Accel: %f, %f, %f", data.accel[0], data.accel[1], data.accel[2]);
-        if (data.accel[2] < -8 || data.accel[2] > 1)
-        { // It's put horizontally or upside down
-            angularMsg = 0;
-        }
-        else
-        {
-            auto angle = -std::atan(data.accel[0] / data.accel[1]);
-            if(abs(angle) < ANGLE_DEADZONE)
-                angle = 0;
-                
-            if (data.accel[1] < 0)
-            {
-                if (data.accel[0] > 0)
-                    angle -= M_PI;
-                else
-                    angle += M_PI;
-            }
+        auto [roll, pitch, yaw] = IMU::getEuler();
+        // ESP_LOGI(TAG, "IMU: %f, %f, %f", roll, pitch, yaw);
 
-            angularMsg = angle * ANGLE_SENSITIVITY;
-            if (angularMsg > MAX_ANG_SPEED)
-                angularMsg = MAX_ANG_SPEED;
-            else if (angularMsg < -MAX_ANG_SPEED)
-                angularMsg = -MAX_ANG_SPEED;
-        }
+        if(abs(roll) < ANGLE_DEADZONE)
+            roll = 0;
+        else if (roll > 0)
+            roll -= ANGLE_DEADZONE;
+        else
+            roll += ANGLE_DEADZONE;
+
+        angularMsg = roll * ANGLE_SENSITIVITY;
+        if (angularMsg > MAX_ANG_SPEED)
+            angularMsg = MAX_ANG_SPEED;
+        else if (angularMsg < -MAX_ANG_SPEED)
+            angularMsg = -MAX_ANG_SPEED;
 #endif
         if (angularMsg != 0 || linearMsg != 0)
             lastActiveTime = millis();

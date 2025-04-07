@@ -36,7 +36,7 @@ namespace KeyPad
 
     /**
      * @brief Initialize the PCF8574 and start the timer to check the keys
-     * 
+     *
      * @return true if the initialization was successful
      */
     bool begin()
@@ -55,7 +55,7 @@ namespace KeyPad
 
     /**
      * @brief Get the last key event
-     * 
+     *
      * @return std::pair<KeyPadPin, bool> the last key pin and its state
      */
     std::pair<KeyPadPin, bool> getLastKeyEvent()
@@ -65,7 +65,7 @@ namespace KeyPad
 
     /**
      * @brief Get the state of a key
-     * 
+     *
      * @param key the key to check
      * @return true if the key is pressed
      */

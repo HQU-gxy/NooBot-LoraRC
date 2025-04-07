@@ -14,7 +14,7 @@ namespace LoraLink
         float currentAngular;    // Angular speed in rad/s
         uint8_t powerPercentage; // Battery percentage
         // Accel in m/s^2
-        IMU::IMUData imu;
+        float imu[6]; // Unused IMU data
         uint8_t checksum;
     } __attribute__((packed));
 
