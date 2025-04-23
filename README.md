@@ -1,13 +1,16 @@
-# Foot Sensor
-This is a foot sensor project that uses a force sensitive resistor to detect the pressure of the foot.  
-The whole circuit is integrated in a shoe sole. The data is sent to a phone via Bluetooth.  
-The data is then processed and displayed on the phone. The data is also sent to a server for further analysis.
+# NooBot-LoraRC
+This is the remote controller terminal software of NooBot project.
+It communicates with the bot via LoRa, sending the speed controlling message
+and receiving, displayig the status of the bot.
 
 ## Hardware
-- Force Sensitive Resistor
-- MCU and Bluetooth module(ESP32H2)
-- Battery
-- Battery charger(TP4054)
+- `EByte E62-433T30D` UART LoRa Module
+- `ESP32-S2` as controller
+- Single cell Li-ion Battery
+- `TP4056` battery charger chip
+- `BMI088` IMU for body-sensing controlling mode
+- `PCF8574` GPIO expander for buttons
+- `ST7789` TFT LCD screen
 
 ## Software
 This project uses the ESP-IDF and Arduino framework.  
@@ -17,7 +20,7 @@ This project uses the ESP-IDF and Arduino framework.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/HQU-gxy/footSensor.git
+git clone https://github.com/HQU-gxy/NooBot-LoraRC.git
 ```
 
 2. Change the directory to the project and export ESP-IDF path:
